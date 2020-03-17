@@ -512,6 +512,7 @@ PLATFORMS
 DEPENDENCIES
   activity_notification
   acts_as_votable (~> 0.12.0)
+  bcrypt
   bootsnap
   bootstrap-typeahead-rails
   byebug
@@ -532,6 +533,7 @@ DEPENDENCIES
   http
   jbuilder (~> 2.5)
   jquery-rails
+  jwt
   language_filter
   listen (>= 3.0.5, < 3.2)
   meta-tags
@@ -576,4 +578,4 @@ DEPENDENCIES
   will_paginate-bootstrap
 
 BUNDLED WITH
-   2.0.2
+   2.1.4
