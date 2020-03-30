@@ -6,10 +6,13 @@ class Api::V0::AuthenticationController < Api::V0::BaseController
   def login
     @user = User.find_by_email(params[:email])
     if @user&.valid_password?(params[:password])
-      token = JsonWebToken.encode(user_id: @user.id)
-      time = (Date.today + 365)
-      render json: { token: token, exp: time.strftime("%m-%d-%Y %H:%M"),
-                    username: @user.name }, status: :accepted
+      exp = (Date.today + 365)
+      token = JsonWebToken.encode(user_id: @user.id, exp: exp)
+      render json: {
+        token: token,
+        exp: exp.strftime("%m-%d-%Y %H:%M"),
+        username: @user.name
+      }, status: :accepted
     else
       if @user
         render json: {
@@ -39,21 +42,24 @@ class Api::V0::AuthenticationController < Api::V0::BaseController
       }, status: :conflict
     else
       @user = User.create!(signup_params)
-      token = JsonWebToken.encode(user_id: @user.id)
-      time = (Date.today + 365)
-      render json: { token: token, exp: time.strftime("%m-%d-%Y %H:%M"),
-                    username: @user.name }, status: :created
+      exp = (Date.today + 365)
+      token = JsonWebToken.encode(user_id: @user.id, exp: exp)
+      render json: {
+        token: token,
+        exp: exp.strftime("%m-%d-%Y %H:%M"),
+        username: @user.name
+      }, status: :created
     end
   end
 
   private
 
     def login_params
-      params.require(:login).permit(:email, :password)
+      params.permit(:email, :password)
     end
 
     def signup_params
-      params.require(:signup).permit(:name, :email, :password)
+      params.permit(:name, :email, :password)
     end
 
 end

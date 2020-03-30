@@ -16,7 +16,7 @@ class Api::V0::UsersController < Api::V0::BaseController
   private
 
   def user_params
-    params.require(:user).permit(:name, :educational_institute, :country, :subscribed)
+    params.permit(:name, :educational_institute, :country, :subscribed)
   end
 
 end

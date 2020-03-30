@@ -1,11 +1,28 @@
 require 'rails_helper'
 
-RSpec.describe "Public Projects Requests", :type => :request do
+RSpec.describe "Projects Requests", :type => :request do
 
-  describe "GET all public projects" do
+  let!(:project_author) { FactoryBot.create(:user) }
+  let!(:projects) { FactoryBot.create_list(:project, 5, author: project_author) }
 
-    let!(:projects) { FactoryBot.create_list(:project, 5, project_access_type: "Public") }
-    before { get '/api/v0/public_projects' }
+  context "Unauthorized requests" do
+
+    before { get '/api/v0/projects', :headers => headers }
+    let!(:hash_body) { JSON.parse(response.body).with_indifferent_access }
+
+    it 'returns status code 401' do
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+  end
+
+  context "Authorized requests" do
+
+    before do
+      token = JsonWebToken.encode(user_id: project_author.id)
+      headers = { "Authorization" => "Token #{token}" }
+      get '/api/v0/projects', :headers => headers
+    end
 
     let!(:hash_body) { JSON.parse(response.body).with_indifferent_access }
 
@@ -13,7 +30,7 @@ RSpec.describe "Public Projects Requests", :type => :request do
       expect(response).to have_http_status(:success)
     end
 
-    it 'returns all public projects' do
+    it 'returns all users projects' do
       expect(hash_body[:meta][:total_count]).to eq(5)
     end
 
